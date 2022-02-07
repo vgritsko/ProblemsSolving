@@ -8,22 +8,16 @@ class SolutionDay1_2 {
         val listOfDepthMeasurements =
             loadDepthMeasurements("/home/vgritsko/IdeaProjects/ProblemsSolving/src/main/resources/advent_day_1")
 
-        val listOfWindowedDepthMeasurements = listOfDepthMeasurements
-            .windowed(SLIDING_WINDOW_SIZE)
-            .map {
-                it.reduce { acc, next ->
-                    acc + next
-                }
-            }
+        val sums = listOfDepthMeasurements
+            .windowed(size = SLIDING_TRIPLE_WINDOW,
+                step = STEP,
+                partialWindows = false,
+                transform = { it.reduce { acc, next -> acc + next } })
+            .windowed(size = SLIDING_DOUBLE_WINDOW, step = STEP, partialWindows = false, transform = { it[1] > it[0] })
+            .filter { it }
+            .size
 
-        var depth = 0
-        for (i in 1 until listOfWindowedDepthMeasurements.size) {
-            if (listOfWindowedDepthMeasurements[i] > listOfWindowedDepthMeasurements[i - 1]) {
-                println("${listOfWindowedDepthMeasurements[i]} increase")
-                depth++
-            }
-        }
-        print("depth: $depth")
+        print("sums: $sums")
     }
 
     private fun loadDepthMeasurements(fileName: String): List<Int> {
@@ -33,6 +27,8 @@ class SolutionDay1_2 {
     }
 
     companion object {
-        const val SLIDING_WINDOW_SIZE = 3
+        const val SLIDING_TRIPLE_WINDOW = 3
+        const val SLIDING_DOUBLE_WINDOW = 2
+        const val STEP = 1
     }
 }
